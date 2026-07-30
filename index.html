@@ -20,6 +20,7 @@
             overflow-x: hidden;
             line-height: 1.6;
         }
+
         #envelope-screen {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -30,32 +31,59 @@
             align-items: center;
             transition: opacity 0.5s ease-out;
         }
-        .envelope-placeholder {
+
+        .envelope-wrapper {
+            position: relative;
             width: 80%;
             max-width: 500px;
             aspect-ratio: 3/4;
-            background: #fff;
+            cursor: pointer;
+        }
+
+        .envelope-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
             border-radius: 8px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
             transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: 1px solid #ddd;
-            color: #aaa;
-            text-align: center;
-            padding: 20px;
+            display: block;
         }
-        .envelope-placeholder:hover {
+
+        .envelope-img:hover {
             transform: scale(1.03);
         }
-        .envelope-placeholder::before {
-            content: "📬 Нажмите, чтобы открыть приглашение";
+
+        /* Подсказка «нажмите сюда» */
+        .tap-hint {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255,255,255,0.85);
+            padding: 12px 24px;
+            border-radius: 30px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
             font-size: 1.1rem;
-            margin-bottom: 12px;
+            color: var(--text-dark);
+            font-weight: 600;
+            text-align: center;
+            z-index: 10;
+            pointer-events: none;
+            backdrop-filter: blur(4px);
         }
+
+        .tap-hint::before {
+            content: "👆 ";
+        }
+
+        @media (max-width: 480px) {
+            .tap-hint {
+                font-size: 0.95rem;
+                padding: 10px 18px;
+            }
+        }
+
         #main-content {
             opacity: 0;
             pointer-events: none;
@@ -64,35 +92,29 @@
             margin: 0 auto;
             padding: 40px 20px;
         }
+
         #main-content.active {
             opacity: 1;
             pointer-events: all;
         }
-        .image-slot {
+
+        .section-image {
             width: 100%;
             max-width: 900px;
-            height: 450px;
-            background: #fff;
+            height: auto;
+            display: block;
+            margin-bottom: 40px;
             border-radius: 4px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 40px;
-            border: 1px dashed #ccc;
-            color: #bbb;
-            position: relative;
+            object-fit: contain;
         }
-        .image-slot::before {
-            content: attr(data-label);
-            text-align: center;
-            padding: 15px;
-        }
+
         .countdown-wrapper {
             text-align: center;
             margin-top: 60px;
             padding: 20px 0;
         }
+
         h2.countdown-title {
             font-size: 1.8rem;
             color: var(--pale-warm);
@@ -101,6 +123,7 @@
             text-transform: uppercase;
             letter-spacing: 2px;
         }
+
         h2.countdown-title::after {
             content: '';
             display: block;
@@ -110,15 +133,18 @@
             margin: 12px auto 0;
             border-radius: 1px;
         }
+
         .timer-grid {
             display: flex;
             justify-content: center;
             gap: 30px;
             flex-wrap: wrap;
         }
+
         .timer-item {
             text-align: center;
         }
+
         .timer-number {
             font-size: 3.5rem;
             font-weight: 700;
@@ -127,6 +153,7 @@
             font-variant-numeric: tabular-nums;
             display: block;
         }
+
         .timer-label {
             font-size: 0.9rem;
             color: var(--label-gray);
@@ -138,14 +165,21 @@
 </head>
 <body>
 
+    <!-- ЭКРАН С КОНВЕРТОМ -->
     <div id="envelope-screen">
-<img src="closed.jpg" alt="Закрытый конверт" class="envelope-img" onclick="openInvitation()">
+        <div class="envelope-wrapper" onclick="openInvitation()">
+            <img src="closed.jpg" alt="Закрытый конверт" class="envelope-img">
+            <div class="tap-hint">Нажмите, чтобы открыть</div>
+        </div>
     </div>
 
+    <!-- ОСНОВНОЙ КОНТЕНТ -->
     <div id="main-content">
-<img src="open.jpg" alt="Приглашение" class="section-image">
-<img src="map.jpg" alt="Карта" class="section-image">
+        
+        <img src="open.jpg" alt="Приглашение" class="section-image">
+        <img src="map.jpg" alt="Карта" class="section-image">
 
+        <!-- ТАЙМЕР -->
         <div class="countdown-wrapper">
             <h2 class="countdown-title">До нашей свадьбы осталось:</h2>
             <div class="timer-grid">
@@ -173,6 +207,7 @@
         function openInvitation() {
             const envelopeScreen = document.getElementById('envelope-screen');
             const mainContent = document.getElementById('main-content');
+            
             envelopeScreen.style.opacity = '0';
             setTimeout(() => {
                 envelopeScreen.style.display = 'none';
@@ -181,6 +216,7 @@
             }, 500);
         }
 
+        // Таймер до 28.08.2026 11:20
         const weddingDate = new Date("August 28, 2026 11:20:00").getTime();
 
         const timer = setInterval(function() {
